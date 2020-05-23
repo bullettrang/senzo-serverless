@@ -8,7 +8,9 @@ custom:
 provider:
   name: aws
   runtime: nodejs12.x
-  environment: 
+  environment:
+    serviceName: ${self:service}
+    stage: ${self:provider.stage} 
     rootUrl:
       Fn::Join:
         - ""

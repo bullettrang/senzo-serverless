@@ -1,3 +1,4 @@
+const { promisify } = require('util')
 const mode = process.env.TEST_MODE  //to toggle between invoking lambda locally (integration tests) & hitting API GW endpoint (acceptance tests)
 const aws4 = require('aws4') //for /restaurants
 const URL = require('url')
@@ -6,10 +7,11 @@ const APP_ROOT = '../../'
 const _ = require('lodash')
 
 const viaHandler = async (event, functionName) => {
-  const handler = require(`${APP_ROOT}/functions/${functionName}`).handler
+  const handler = promisify(require(`${APP_ROOT}/functions/${functionName}`).handler)
 
   const context = {}
   const response = await handler(event, context)
+  console.log(response);
   //const contentType = _.get(response, 'headers.Content-Type', 'application/json');
   const contentType = _.get(response, 'headers.content-type', 'application/json');
   if (response.body && contentType === 'application/json') {
@@ -97,6 +99,7 @@ const we_invoke_search_restaurants = async (theme, user) => {
         throw new Error(`unsupported mode: ${mode}`)
     }
   }
+
 module.exports = {
   we_invoke_get_index,
   we_invoke_get_restaurants,
